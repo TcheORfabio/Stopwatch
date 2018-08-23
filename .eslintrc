@@ -1,0 +1,6 @@
+{
+  "extends": "equimper",
+  "rules": {
+      "curly": "off"
+  }
+}
