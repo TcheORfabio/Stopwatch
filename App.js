@@ -8,7 +8,7 @@ const store = getStore();
 const App = () => (
   <Provider store={store}>
     <Main />
-  </Provider >
+  </Provider>
 );
 
 export default App;

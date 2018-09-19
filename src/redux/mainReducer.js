@@ -1,28 +1,52 @@
-import * as a from './constants';
+import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, SET_PAUSE, STOP_TIME, RESET_LAPS } from './constants';
 
 const initialState = {
-  time: 0,
-  pause: false,
+  initialTime: 0,
+  finalTime: 0,
+  isRunning: null,
+  laps: [],
 };
 
-const mainReducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
-    case a.ADD_TIME:
+    case SET_INITIAL_TIME:
       return {
         ...state,
-        time: state.time + action.payload,
+        initialTime: action.payload,
       };
-
-    case a.TOGGLE_PAUSE:
+    case SET_FINAL_TIME:
       return {
         ...state,
-        pause: !state.pause,
+        finalTime: action.payload,
       };
 
-    default: {
+    case SET_PAUSE:
+      return {
+        ...state,
+        isRunning: action.payload,
+      };
+
+    case ADD_LAP:
+      return {
+        ...state,
+        laps: [...state.laps, action.payload],
+      };
+
+    case RESET_LAPS:
+      return {
+        ...state,
+        laps: [],
+      };
+
+    case STOP_TIME:
+      return {
+        ...state,
+        initialTIme: 0,
+        finalTime: 0,
+        isRunning: null,
+      };
+
+    default:
       return state;
-    }
   }
 };
-
-export default mainReducer;

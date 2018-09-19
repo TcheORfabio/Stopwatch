@@ -1,39 +1,52 @@
 
 import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
-  top: {
-    flex: 1,
-    borderWidth: 5,
-  },
-  bottom: {
-    flex: 3,
-    borderWidth: 5,
-  },
-  buttonWrapper: {
-    flexDirection: 'row',
     justifyContent: 'center',
   },
-  timerWrapper: {
+  ViewTop: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  ViewMid: {
+    flex: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    margin: 5,
+  },
+  ViewBottom: {
+    flex: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 5,
   },
-  header: {
-    justifyContent: 'center',
-    backgroundColor: '#f9f9f9',
-  },
-  title: {
+  timer: {
+    flex: 0.75,
+    width: '80%',
     alignSelf: 'center',
-    fontWeight: '600',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 6,
+    borderRadius: 5,
+    borderColor: '#000',
   },
-  text: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  roundButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 5,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resetButton: {
+    width: '90%',
+    height: '15%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: 5,
+    backgroundColor: '#17BEBB',
   },
 });

@@ -1,12 +1,28 @@
-import * as a from './constants';
+import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, RESET_LAPS, SET_PAUSE, STOP_TIME } from './constants';
 
-const addTime = time => ({
-  type: a.ADD_TIME,
+export const setInitialTime = (time) => ({
+  type: SET_INITIAL_TIME,
   payload: time,
 });
 
-const togglePause = () => ({
-  type: a.TOGGLE_PAUSE,
+export const setFinalTime = (time) => ({
+  type: SET_FINAL_TIME,
+  payload: time,
 });
 
-export { addTime, togglePause };
+export const addLap = (lap) => ({
+  type: ADD_LAP,
+  payload: lap,
+});
+
+export const resetLaps = () => ({
+  type: RESET_LAPS,
+});
+
+export const setPause = () => ({
+  type: SET_PAUSE,
+});
+
+export const stopTime = () => ({
+  type: STOP_TIME,
+});

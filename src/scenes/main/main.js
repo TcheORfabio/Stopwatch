@@ -1,75 +1,108 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Text, View, Button } from 'react-native';
-import { addTime, togglePause } from '../../redux/actions';
-import { styles } from './style';
-import Chronometer from './Chronometer';
+import { Text, View, TouchableOpacity, FlatList } from 'react-native';
+import _ from 'lodash';
+import * as moment from 'moment';
+import { setInitialTime, setFinalTime, addLap, resetLaps } from '../../redux/actions';
+import styles from './style';
 
-const Main = props => {
-  const { container, header, title, top, bottom } = styles;
-  /* Styles do Timer */
-  const { timerWrapper } = styles;
-  /* Styles do Button */
-  const { buttonWrapper } = styles;
-  /** Objeto responsável por contar o tempo
-  const chrono = new Chronometer();
-  let currentLap = 0;
-  let totalTime = 0;
-*/
-  const _renderTitle = () => (
-    <View style={header}>
-      <Text style={title}>Chronus</Text>
-    </View>
-  );
+const RoundButton = (props) => (
+  <TouchableOpacity
+    style={[styles.roundButton, props.style]}
+    onPress={props.onPress}
+  >
+    <Text style={styles.titleButton}>{props.title}</Text>
+  </TouchableOpacity>
+);
 
-  const _renderTimer = () => (
-    <View style={timerWrapper}>
-      <Text>{props.time === undefined ? '00' : props.time}</Text>
-    </View>
-  );
+class Main extends Component {
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
-  const _renderButtons = () => (
-    <View style={buttonWrapper}>
-      <Button
-        title='Iniciar'
-        onPress={() => {
-          console.log(props);
-          props.addTime(1);
-        }}
-      />
-      <Button
-        title='Volta'
-        onPress={() => true}
-      />
-    </View>
-  );
+  /** Método para iniciar o cronômetro*/
+  startTimer = () => {
+    this.stopTimer();
+    const { finalTime, initialTime, addLap, setFinalTime, setInitialTime } = this.props; // eslint-disable-line no-shadow
+    const lap = finalTime - initialTime;
+    if (lap !== 0)
+      addLap(lap);
 
-  return (
-    <View style={container}>
-      <View style={top}>
-        {_renderTitle()}
-        {_renderTimer()}
+    const now = new Date().getTime();
+    setInitialTime(now);
+    setFinalTime(now);
+    this.interval = setInterval(() => setFinalTime(new Date().getTime()), 50);
+  }
+
+  stopTimer = () => {
+    clearInterval(this.interval);
+    const { setInitialTime, setFinalTime } = this.props; // eslint-disable-line no-shadow
+    setInitialTime(0);
+    setFinalTime(0);
+  }
+
+  ListLaps = () => (
+    <FlatList
+      data={this.props.laps}
+      keyExtractor={(item, index) => `list_${item}-${index}`}
+      renderItem={({ item, index }) => this.renderItem(item, index)}
+    />
+  )
+
+  renderItem = (lap, index) => {
+    const time = moment.duration(lap);
+    const milliseconds = _.padStart(time.milliseconds(time.milliseconds()), 3, '0');
+    const seconds = _.padStart(time.seconds(time.milliseconds()), 2, '0');
+    const minutes = _.padStart(time.minutes(time.milliseconds()), 2, '0');
+    return (
+      <View style={{ width: '90%', borderWidth: 3, borderRadius: 3, alignSelf: 'center' }}>
+        <Text>Lap {_.padStart(index, 2, '0')} Time: {minutes}:{seconds}, {milliseconds}</Text>
       </View>
-      <View style={bottom}>
-        {_renderButtons()}
+    );
+  }
+
+  /** Método render*/
+  render() {
+    const time = moment.duration(this.props.finalTime - this.props.initialTime);
+    const milliseconds = _.padStart(time.milliseconds(time.milliseconds()), 3, '0');
+    const seconds = _.padStart(time.seconds(time.milliseconds()), 2, '0');
+    const minutes = _.padStart(time.minutes(time.milliseconds()), 2, '0');
+    return (
+      <View style={styles.container}>
+        <View style={styles.ViewTop}>
+          <View style={styles.timer}>
+            <Text style={{ fontSize: 45 }}>{minutes}:{seconds}, {milliseconds}</Text>
+          </View>
+        </View>
+        <View style={styles.ViewMid}>
+          <RoundButton title='Iniciar' onPress={this.startTimer} />
+          <RoundButton title='Parar' onPress={this.stopTimer} />
+        </View>
+        <View style={styles.ViewBottom}>
+          <View style={{ flex: 1, width: '100%', borderWidth: 3 }}>
+            <this.ListLaps />
+          </View>
+          <TouchableOpacity onPress={this.props.resetLaps} style={styles.resetButton}>
+            <Text>Reset Laps</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  initialTime: state.mainReducer.initialTime,
+  finalTime: state.mainReducer.finalTime,
+  laps: state.mainReducer.laps,
+  isRunning: state.mainReducer.isRunning,
+});
+
+const mapDispatchToProps = {
+  setInitialTime,
+  setFinalTime,
+  addLap,
+  resetLaps,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
-
-const mapStateToProps = state => ({
-  time: state.mainReducer.time,
-  pause: state.mainReducer.pause,
-});
-
-// const mapActionsToProps = dispatch => ({
-//   add: (time) => dispatch(addTime(time)),
-//   toggle: () => dispatch(togglePause()),
-// });
-
-const mapDispatchToProps = {
-  addTime,
-  togglePause,
-};
