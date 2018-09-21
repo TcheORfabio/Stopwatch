@@ -19,8 +19,9 @@ export const resetLaps = () => ({
   type: RESET_LAPS,
 });
 
-export const setPause = () => ({
+export const setPause = (pause) => ({
   type: SET_PAUSE,
+  payload: pause,
 });
 
 export const stopTime = () => ({

@@ -7,19 +7,25 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   ViewTop: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
   },
   ViewMid: {
-    flex: 2,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     margin: 5,
   },
   ViewBottom: {
-    flex: 4,
+    flex: 3,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backgroundColorStd: {
+    backgroundColor: '#100F10',
+  },
+  fontColorStd: {
+    color: '#FFFFFF',
   },
   timer: {
     flex: 0.75,
@@ -27,16 +33,14 @@ export default StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 6,
-    borderRadius: 5,
-    borderColor: '#000',
+    // borderWidth: 6,
+    // borderRadius: 5,
+    // borderColor: '#000',
   },
   roundButton: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    borderWidth: 5,
-    borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -48,5 +52,12 @@ export default StyleSheet.create({
     borderRadius: 5,
     borderWidth: 5,
     backgroundColor: '#17BEBB',
+  },
+  listItem: {
+    width: '90%',
+    borderTopWidth: 1,
+    borderColor: '#fff',
+    alignSelf: 'center',
+    paddingVertical: 10, 
   },
 });
