@@ -1,4 +1,4 @@
-import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, SET_PAUSE, STOP_TIME, RESET_LAPS } from './constants';
+import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, SET_LAP, SET_PAUSE, STOP_TIME, RESET_LAPS } from './constants';
 
 const initialState = {
   initialTime: 0,
@@ -29,7 +29,13 @@ export default (state = initialState, action) => {
     case ADD_LAP:
       return {
         ...state,
-        laps: [...state.laps, action.payload],
+        laps: [{ lap: action.payload.lap, index: action.payload.index }, ...state.laps],
+      };
+
+    case SET_LAP:
+      return {
+        ...state,
+        laps: [action.payload, ...state.laps.slice(1, state.laps.length)],
       };
 
     case RESET_LAPS:

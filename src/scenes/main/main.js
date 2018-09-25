@@ -3,49 +3,63 @@ import { connect } from 'react-redux';
 import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import _ from 'lodash';
 import * as moment from 'moment';
-import { setInitialTime, setFinalTime, addLap, resetLaps, setPause } from '../../redux/actions';
+import { setInitialTime, setFinalTime, setLap, addLap, resetLaps, setPause } from '../../redux/actions';
 import styles from './style';
 
 const RoundButton = (props) => (
   <TouchableOpacity
     style={[styles.roundButton, { backgroundColor: props.backgroundColor }]}
     onPress={props.onPress}
+    disabled={props.disabled}
   >
-    <View style={[styles.roundButton, { width: 76, height: 76, borderRadius: 38, borderWidth: 2, borderColor: '#100F10' }]}>
-      <Text style={{ color: props.titleColor }}>{props.title}</Text>
+    <View style={styles.innerRoundButton}>
+      <Text style={styles.textColor}>{props.title}</Text>
     </View>
   </TouchableOpacity>
 );
 
-const ListLaps = (props) => (
-  <FlatList
-    data={props.data}
-    keyExtractor={(item, index) => `list_${item}-${index}`}
-    renderItem={({ item, index }) => renderItem(item, index)}
-  />
-);
+const ListLaps = (props) => {
+  const finishedLaps = props.data.slice(1);
+  let min = Number.MAX_SAFE_INTEGER;
+  let max = Number.MIN_SAFE_INTEGER;
+  if (finishedLaps.length >= 2) {
+    finishedLaps.forEach(lap => {
+      if (lap.lap < min) min = lap;
+      if (lap.lap > max) max = lap;
+    });
+  }
 
-const renderItem = (lap, index) => {
-  const time = moment.duration(lap);
+  return (
+    <FlatList
+      data={props.data}
+      keyExtractor={(item, index) => `list_${item}-${index}`}
+      renderItem={({ item }) => renderItem(item)}
+      style={{ width: '100%' }}
+    />
+  );
+};
+
+const renderItem = (lap, fastest, slowest) => {
+  const time = moment.duration(lap.lap);
   const milliseconds = _.padStart(time.milliseconds(), 3, '0');
   const seconds = _.padStart(time.seconds(), 2, '0');
   const minutes = _.padStart(time.minutes(), 2, '0');
   const hours = _.padStart(time.hours(), 2, '0');
+  const itemStyle = [
+    styles.textColor,
+    { flex: 1, textAlign: 'center' },
+
+  ];
   return (
-    <View style={styles.listItem}>
-      <Text style={[styles.fontColorStd, { textAlign: 'center' }]}>
-        Lap {_.padStart(index + 1, 2, '0')} - Time: {hours > 0 && `${hours}:`}{minutes}:{seconds},{milliseconds}
+    <View style={styles.renderItemView}>
+      <Text style={itemStyle}>
+        Lap {_.padStart(lap.index + 1, 2, '0')} - Time: {hours > 0 && `${hours}:`}{minutes}:{seconds},{milliseconds}
       </Text>
     </View>
   );
 };
 
 class Main extends Component {
-  constructor(props) {
-    super(props);
-    this.totalTime = 0;
-  }
-
   componentWillUnmount() {
     clearInterval(this.interval);
   }
@@ -53,68 +67,72 @@ class Main extends Component {
   /** Método para iniciar o cronômetro*/
   startTimer = () => {
     clearInterval(this.interval);
-    const { finalTime, initialTime, addLap, setFinalTime, setInitialTime, setPause } = this.props; // eslint-disable-line no-shadow
-    const lap = finalTime - initialTime;
+    const lap = this.props.finalTime - this.props.initialTime;
     if (lap !== 0)
-      addLap(lap);
+      this.props.addLap(lap, this.props.laps.length);
 
-    setPause(true);
     const now = new Date().getTime();
-    setInitialTime(now);
-    setFinalTime(now);
-    this.interval = setInterval(() => setFinalTime(new Date().getTime()), 50);
+    this.props.setInitialTime(now);
+    this.props.setFinalTime(now);
+    this.props.setPause(true);
+
+    this.interval = setInterval(() => {
+      this.props.setFinalTime(new Date().getTime());
+      this.props.setLap(this.props.finalTime - this.props.initialTime, this.props.laps.length - 1);
+    }, 50);
   }
 
   pauseTimer = () => {
-    const { setInitialTime, setFinalTime, setPause } = this.props; // eslint-disable-line no-shadow
-    const now = new Date().getTime();
     clearInterval(this.interval);
-
-    setPause(false);
-    this.totalTime += this.props.finalTime - this.props.initialTime;
-    setInitialTime(now);
-    setFinalTime(now);
+    this.props.setPause(false);
+    const now = new Date().getTime();
+    this.props.setFinalTime(now);
   }
 
-  reset = () => {
-    this.props.resetLaps();
+  stopTimer = () => {
     clearInterval(this.interval);
-    setPause(false);
-    setInitialTime(0);
-    setFinalTime(0);
-    this.totalTime = 0;
+    this.props.setPause(false);
+    this.props.setInitialTime(0);
+    this.props.setFinalTime(0);
+    this.props.resetLaps();
   }
 
   /** Método render*/
   render() {
-    const time = moment.duration(this.totalTime + (this.props.finalTime - this.props.initialTime));
+    const time = moment.duration(this.props.laps.reduce((acc, next) => acc + next.lap, 0) + (this.props.finalTime - this.props.initialTime));
     const milliseconds = _.padStart(time.milliseconds(), 3, '0');
     const seconds = _.padStart(time.seconds(), 2, '0');
     const minutes = _.padStart(time.minutes(), 2, '0');
     const hours = _.padStart(time.hours(), 2, '0');
     return (
-      <View style={[styles.container, styles.backgroundColorStd]}>
+      <View style={styles.container}>
         <View style={styles.ViewTop}>
-          <View style={styles.timer}>
-            <Text style={[{ fontSize: 45 }, styles.fontColorStd]}>{hours > 0 && `${hours}:`}{minutes}:{seconds},{milliseconds}</Text>
-          </View>
+          <Text style={[
+            { flex: 0.5,
+              width: '100%',
+              fontSize: 45,
+              textAlign: 'center',
+            },
+            styles.textColor,
+          ]}
+          >
+            {hours > 0 && `${hours}:`}{minutes}:{seconds}, {milliseconds}
+          </Text>
         </View>
         {!this.props.isRunning && (
           <View style={styles.ViewMid}>
-            <RoundButton title='Iniciar' backgroundColor='#1B301E' titleColor='#50D167' onPress={this.startTimer} />
-            <RoundButton title='Parar' backgroundColor='#361515' titleColor='#E33935' onPress={this.reset} />
+            <RoundButton title='Iniciar' backgroundColor='#3E8989' onPress={this.startTimer} />
+            <RoundButton title='Parar' backgroundColor='#D62246' onPress={this.stopTimer} />
           </View>
         )}
-        {this.props.initialTime > 0 && this.props.isRunning && (
+        {this.props.finalTime > 0 && this.props.isRunning && (
           <View style={styles.ViewMid}>
-            <RoundButton title='Volta' backgroundColor='#1B301E' titleColor='#50D167' onPress={this.startTimer} />
-            <RoundButton title='Pausar' backgroundColor='#361515' titleColor='#E33935' onPress={this.pauseTimer} />
+            <RoundButton title='Volta' backgroundColor='#3E8989' onPress={this.startTimer} />
+            <RoundButton title='Pausar' backgroundColor='#D62246' onPress={this.pauseTimer} />
           </View>
         )}
         <View style={styles.ViewBottom}>
-          <View style={{ flex: 1, width: '100%' }}>
-            <ListLaps data={this.props.laps} />
-          </View>
+          <ListLaps data={this.props.laps} />
         </View>
       </View>
     );
@@ -132,6 +150,7 @@ const mapDispatchToProps = {
   setInitialTime,
   setFinalTime,
   addLap,
+  setLap,
   resetLaps,
   setPause,
 };

@@ -1,4 +1,4 @@
-import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, RESET_LAPS, SET_PAUSE, STOP_TIME } from './constants';
+import { SET_INITIAL_TIME, SET_FINAL_TIME, ADD_LAP, SET_LAP, RESET_LAPS, SET_PAUSE, STOP_TIME } from './constants';
 
 export const setInitialTime = (time) => ({
   type: SET_INITIAL_TIME,
@@ -10,9 +10,14 @@ export const setFinalTime = (time) => ({
   payload: time,
 });
 
-export const addLap = (lap) => ({
+export const addLap = (lap, index) => ({
   type: ADD_LAP,
-  payload: lap,
+  payload: { lap, index },
+});
+
+export const setLap = (lap, index) => ({
+  type: SET_LAP,
+  payload: { lap, index },
 });
 
 export const resetLaps = () => ({

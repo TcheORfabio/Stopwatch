@@ -5,13 +5,15 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    padding: 5,
+    backgroundColor: '#1B1B1E',
   },
   ViewTop: {
-    flex: 2,
+    flex: 1,
     justifyContent: 'center',
   },
   ViewMid: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row',
     justifyContent: 'space-around',
     margin: 5,
@@ -27,15 +29,8 @@ export default StyleSheet.create({
   fontColorStd: {
     color: '#FFFFFF',
   },
-  timer: {
-    flex: 0.75,
-    width: '80%',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // borderWidth: 6,
-    // borderRadius: 5,
-    // borderColor: '#000',
+  textColor: {
+    color: '#D8DBE2',
   },
   roundButton: {
     width: 80,
@@ -44,20 +39,28 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  resetButton: {
-    width: '90%',
-    height: '15%',
+  innerRoundButton: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    borderWidth: 5,
-    backgroundColor: '#17BEBB',
+    borderWidth: 2,
+    borderColor: '#1B1B1E',
   },
-  listItem: {
+  renderItemView: {
     width: '90%',
-    borderTopWidth: 1,
-    borderColor: '#fff',
+    borderTopWidth: 3,
+    borderColor: '#D8DBE2',
+    borderRadius: 3,
     alignSelf: 'center',
-    paddingVertical: 10, 
+    marginTop: 10,
+    paddingTop: 5,
+  },
+  fastest: {
+    color: '#4BC05F',
+  },
+  slowest: {
+    color: '#CC3531',
   },
 });
