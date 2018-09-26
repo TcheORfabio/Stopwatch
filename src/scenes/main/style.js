@@ -50,7 +50,6 @@ export default StyleSheet.create({
   },
   renderItemView: {
     width: '90%',
-    borderTopWidth: 3,
     borderColor: '#D8DBE2',
     borderRadius: 3,
     alignSelf: 'center',
@@ -58,9 +57,9 @@ export default StyleSheet.create({
     paddingTop: 5,
   },
   fastest: {
-    color: '#4BC05F',
+    color: '#3E8989',
   },
   slowest: {
-    color: '#CC3531',
+    color: '#D62246',
   },
 });
